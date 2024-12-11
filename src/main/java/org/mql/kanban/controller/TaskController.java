@@ -37,7 +37,7 @@ public class TaskController {
         taskService.createTask(task);
         return "redirect:/tasks";
     }
-    
+
     /*@PostMapping("/{taskId}/update-status")
     public ResponseEntity<Void> updateTaskStatus(@PathVariable Long taskId, @RequestBody Map<String, String> payload) {
         String newStatus = payload.get("status");
@@ -48,7 +48,7 @@ public class TaskController {
             return ResponseEntity.badRequest().build();
         }
     }*/
-    
+
     @PostMapping("/update-task-status")
     public String updateTaskStatus(@RequestParam Long taskId, @RequestParam String status) {
         System.out.println("Task ID: " + taskId + ", Status: " + status); // Pour vérifier les valeurs reçues
@@ -63,6 +63,5 @@ public class TaskController {
         return "redirect:/project/" + (task != null ? task.getProject().getId() : 0);
     }
 
-    
-}
 
+}

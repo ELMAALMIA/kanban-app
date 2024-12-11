@@ -6,8 +6,10 @@
 </head>
 <body>
     <h1>Ajouter une Tâche</h1>
-   <form th:action="@{/add-task/{projectId}(projectId=${projectId})}" method="post">
+  <form th:action="@{/add-task/{projectId}(projectId=${projectId})}" method="post">
     <label for="title">Titre :</label>
+
+
     <input type="text" id="title" name="title" required />
 
     <label for="status">Statut :</label>
