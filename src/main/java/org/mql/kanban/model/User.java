@@ -19,7 +19,16 @@ public class User {
 
         @OneToMany(mappedBy = "user")
         private List<Project> projects = new ArrayList<>();
+    @Column(nullable = false)
+    private String role; // Le rôle de l'utilisateur (e.g., "ADMIN" ou "USER")
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
     public Long getId() {
         return id;
     }

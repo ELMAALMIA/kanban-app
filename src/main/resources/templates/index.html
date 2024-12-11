@@ -6,6 +6,9 @@
 </head>
 <body>
     <h1>Kanban App - Liste des Projets</h1>
+    <div th:if="${#authentication.principal.role == 'ADMIN'}">
+        <a href="/admin/users">Voir la liste des utilisateurs</a>
+    </div>
     <a class="add-project-link" th:href="@{/add-project}">Ajouter un Projet</a>
     <table border="1">
         <thead>

@@ -3,6 +3,8 @@ package org.mql.kanban.controller;
 import org.mql.kanban.model.User;
 import org.mql.kanban.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,9 +43,18 @@ public class AuthController {
     }
     @GetMapping("/admin/users")
     public String listUsers(Model model) {
-        List<User> users = userRepository.findAll(); // Récupérer tous les utilisateurs
-        model.addAttribute("users", users); // Ajouter la liste au modèle
-        return "userList"; // Nom du fichier Thymeleaf sans l'extension .html
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentPrincipalName = authentication.getName();
+        User user = userRepository.findByUsername(currentPrincipalName).orElse(null);
+
+        if (user == null || !user.getRole().equals("ADMIN")) {
+            return "error"; // Rediriger vers une page d'erreur ou afficher un message d'accès interdit
+        }
+
+        List<User> users = userRepository.findAll();
+        model.addAttribute("users", users);
+        return "userList"; // Page qui affiche la liste des utilisateurs
     }
+
 
 }
