@@ -3,8 +3,6 @@ package org.mql.kanban.controller;
 import org.mql.kanban.model.User;
 import org.mql.kanban.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,34 +25,42 @@ public class AuthController {
         return "login";
     }
 
-    // Méthode pour afficher le formulaire d'ajout d'utilisateur
+    // Afficher le formulaire d'ajout d'utilisateur (pour l'inscription)
+    @GetMapping("/register")
+    public String registrationPage(Model model) {
+        model.addAttribute("user", new User());
+        return "addUser"; // Ensure addUser.html exists
+    }
+
+
+    // Traiter l'inscription d'un nouvel utilisateur
+    @PostMapping("/register")
+    public String addUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encoder le mot de passe
+        userRepository.save(user); // Sauvegarder l'utilisateur dans la base de données
+        return "redirect:/signin"; // Rediriger vers la page de connexion après l'inscription
+    }
+
+    // Afficher le formulaire d'ajout d'utilisateur pour les administrateurs
     @GetMapping("/admin/addUser")
     public String showAddUserForm(Model model) {
         model.addAttribute("user", new User());
         return "addUser"; // Le nom de la vue pour le formulaire d'ajout d'utilisateur
     }
 
-    // Méthode pour traiter l'ajout d'utilisateur
+    // Méthode pour traiter l'ajout d'utilisateur par un administrateur
     @PostMapping("/admin/addUser")
-    public String addUser(User user) {
+    public String addAdminUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return "redirect:/admin/users"; // Redirige vers la liste des utilisateurs après ajout
     }
+
+    // Afficher la liste des utilisateurs
     @GetMapping("/admin/users")
     public String listUsers(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        User user = userRepository.findByUsername(currentPrincipalName).orElse(null);
-
-        if (user == null || !user.getRole().equals("ADMIN")) {
-            return "error"; // Rediriger vers une page d'erreur ou afficher un message d'accès interdit
-        }
-
         List<User> users = userRepository.findAll();
         model.addAttribute("users", users);
         return "userList"; // Page qui affiche la liste des utilisateurs
     }
-
-
 }

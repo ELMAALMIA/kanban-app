@@ -49,18 +49,24 @@ public class TaskController {
         }
     }*/
 
-    @PostMapping("/update-task-status")
-    public String updateTaskStatus(@RequestParam Long taskId, @RequestParam String status) {
-        System.out.println("Task ID: " + taskId + ", Status: " + status); // Pour vérifier les valeurs reçues
-        Task task = taskService.getTaskById(taskId);
-        if (task != null) {
-            task.setStatus(TaskStatus.valueOf(status));
+    @PostMapping("/{taskId}/{status}")
+    public ResponseEntity<String> updateTaskStatus(@PathVariable Long taskId, @PathVariable String status) {
+        try {
+            Task task = taskService.getTaskById(taskId);
+            if (task == null) {
+                return ResponseEntity.badRequest().body("Task not found");
+            }
+
+            TaskStatus newStatus = TaskStatus.valueOf(status.toUpperCase());
+            task.setStatus(newStatus);
             taskService.saveTask(task);
-            System.out.println("Task updated successfully");
-        } else {
-            System.out.println("Task not found");
+
+            return ResponseEntity.ok("Task updated successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid status value: " + status);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("An error occurred: " + e.getMessage());
         }
-        return "redirect:/project/" + (task != null ? task.getProject().getId() : 0);
     }
 
 
