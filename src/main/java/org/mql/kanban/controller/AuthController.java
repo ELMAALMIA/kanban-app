@@ -25,42 +25,46 @@ public class AuthController {
         return "login";
     }
 
-    // Afficher le formulaire d'ajout d'utilisateur (pour l'inscription)
+    // Display the user registration form
     @GetMapping("/register")
     public String registrationPage(Model model) {
         model.addAttribute("user", new User());
-        return "addUser"; // Ensure addUser.html exists
+        return "addUser"; // Ensure addUser.html exists for registration
     }
 
-
-    // Traiter l'inscription d'un nouvel utilisateur
+    // Handle the registration of a new user
     @PostMapping("/register")
-    public String addUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encoder le mot de passe
-        userRepository.save(user); // Sauvegarder l'utilisateur dans la base de données
-        return "redirect:/signin"; // Rediriger vers la page de connexion après l'inscription
+
+    public String addUser(User user, Model model) {
+        System.out.println(user.toString());
+        // Check if the username already exists
+
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode the password
+        userRepository.save(user); // Save the user in the database
+        return "redirect:/signin"; // Redirect to the sign-in page after registration
     }
 
-    // Afficher le formulaire d'ajout d'utilisateur pour les administrateurs
+
+    // Display the form to add a user (for admins)
     @GetMapping("/admin/addUser")
     public String showAddUserForm(Model model) {
         model.addAttribute("user", new User());
-        return "addUser"; // Le nom de la vue pour le formulaire d'ajout d'utilisateur
+        return "addUser"; // Reuse addUser.html for admin addition
     }
 
-    // Méthode pour traiter l'ajout d'utilisateur par un administrateur
+    // Handle the addition of a user by an admin
     @PostMapping("/admin/addUser")
     public String addAdminUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        return "redirect:/admin/users"; // Redirige vers la liste des utilisateurs après ajout
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // Encode the password
+        userRepository.save(user); // Save the user in the database
+        return "redirect:/admin/users"; // Redirect to the user list after addition
     }
 
-    // Afficher la liste des utilisateurs
+    // Display the list of users
     @GetMapping("/admin/users")
     public String listUsers(Model model) {
         List<User> users = userRepository.findAll();
         model.addAttribute("users", users);
-        return "userList"; // Page qui affiche la liste des utilisateurs
+        return "userList"; // Page that displays the list of users
     }
 }

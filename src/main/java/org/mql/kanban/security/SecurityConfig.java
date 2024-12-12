@@ -45,7 +45,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .antMatchers("/signin", "/signup").permitAll() // Allow access to these pages
+                        .antMatchers("/signin", "/register").permitAll() // Allow access to signin and register pages
                         .anyRequest().authenticated() // All other requests require authentication
                 )
                 .formLogin(form -> form
